@@ -79,6 +79,7 @@ int main(void) {
             return 1;
         }
         close(fileDescriptor[0]);
+        printf("La somma è: %d\n", result);
     }
     return 0;
 }

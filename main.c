@@ -71,6 +71,14 @@ int main(void) {
                 }
             }
         }
+        close(fileDescriptor[1]);
+        wait(NULL);
+        int result;
+        if (read(fileDescriptor[0], &result, sizeof(int)) != sizeof(int)) {
+            perror("read from child");
+            return 1;
+        }
+        close(fileDescriptor[0]);
     }
     return 0;
 }

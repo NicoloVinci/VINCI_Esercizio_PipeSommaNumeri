@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <string.h>
+#include <errno.h>
 
 int main(void) {
     int fileDescriptor[2];
@@ -18,7 +20,42 @@ int main(void) {
     if (child == 0) {
 
     } else {
-
+        printf("Inserisci due numeri interi:\n");
+        int a, b;
+        for (int i = 0; i < 2; i++) {
+            char buf[64];
+            char *endptr;
+            if (!fgets(buf, sizeof(buf), stdin)) {
+                printf("Numero non valido, inserisci un numero intero.\n");
+                i--;
+                continue;
+            }
+            if (buf[0] == '\n') {
+                printf("Numero non valido, inserisci un numero intero.\n");
+                i--;
+                continue;
+            }
+            errno = 0;
+            long val = strtol(buf, &endptr, 10);
+            if (endptr == buf || errno == ERANGE) {
+                printf("Numero non valido, inserisci un numero intero.\n");
+                i--;
+                continue;
+            }
+            while (*endptr == ' ' || *endptr == '\t') {
+                endptr++;
+            }
+            if (*endptr != '\n' && *endptr != '\0') {
+                printf("Numero non valido, inserisci un numero intero.\n");
+                i--;
+                continue;
+            }
+            if (i == 0) {
+                a = (int)val;
+            } else {
+                b = (int)val;
+            }
+        }
     }
     return 0;
 }

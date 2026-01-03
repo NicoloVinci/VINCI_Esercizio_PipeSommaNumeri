@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <errno.h>
+#include <limits.h>
 
 int main(void) {
     int fileDescriptor[2];
@@ -26,23 +27,17 @@ int main(void) {
         close(fileDescriptor[1]);
         close(fileDescriptor1[0]);
         ssize_t n;
-        int num1, num2, num, i = 0, sum = 0;
-        while ((n = read(fileDescriptor[0], &num, sizeof(int))) > 0) {
-            if (n != sizeof(int)) {
-                perror("read from father");
-                exit(EXIT_FAILURE);
-            }
-            if (i == 0) {
-                num1 = num;
-            } else {
-                num2 = num;
-            }
-            i++;
-        }
-        if (n == -1) {
+        int num1, num2, sum = 0, i = 0;
+        if (read(fileDescriptor[0], &num1, sizeof(int)) != sizeof(int)) {
             perror("read from father");
             exit(EXIT_FAILURE);
         }
+        i++;
+        if (read(fileDescriptor[0], &num2, sizeof(int)) != sizeof(int)) {
+            perror("read from father");
+            exit(EXIT_FAILURE);
+        }
+        i++;
         if (i != 2) {
             printf("Ricevuti numeri non validi.\n");
             close(fileDescriptor[0]);
@@ -85,6 +80,11 @@ int main(void) {
                 endptr++;
             }
             if (*endptr != '\n' && *endptr != '\0') {
+                printf("Numero non valido, inserisci un numero intero.\n");
+                i--;
+                continue;
+            }
+            if (val < INT_MIN || val > INT_MAX) {
                 printf("Numero non valido, inserisci un numero intero.\n");
                 i--;
                 continue;

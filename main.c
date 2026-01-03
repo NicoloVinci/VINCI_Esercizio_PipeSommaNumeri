@@ -56,6 +56,21 @@ int main(void) {
                 b = (int)val;
             }
         }
+        for (int i = 0; i < 2; i++) {
+            if (i == 0) {
+                if (write(fileDescriptor[1], &a, sizeof(int)) != sizeof(int)) {
+                    perror("write to child");
+                    i--;
+                    return 1;
+                }
+            } else {
+                if (write(fileDescriptor[1], &b, sizeof(int)) != sizeof(int)) {
+                    perror("write to child");
+                    i--;
+                    return 1;
+                }
+            }
+        }
     }
     return 0;
 }

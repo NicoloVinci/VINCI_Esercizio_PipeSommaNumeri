@@ -12,12 +12,19 @@ int main(void) {
         perror("pipe");
         exit(EXIT_FAILURE);
     }
+    int fileDescriptor1[2];
+    if (pipe(fileDescriptor1) == -1) {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
     pid_t child;
     if ((child = fork()) == -1) {
         perror("fork");
         exit(EXIT_FAILURE);
     }
     if (child == 0) {
+        close(fileDescriptor[1]);
+        close(fileDescriptor1[0]);
         ssize_t n;
         int num1, num2, num, i = 0, sum = 0;
         while ((n = read(fileDescriptor[0], &num, sizeof(int))) > 0) {
@@ -43,13 +50,15 @@ int main(void) {
         }
         close(fileDescriptor[0]);
         sum = num1 + num2;
-        if (write(fileDescriptor[1], &sum, sizeof(int)) != sizeof(int)) {
+        if (write(fileDescriptor1[1], &sum, sizeof(int)) != sizeof(int)) {
             perror("write to father");
             exit(EXIT_FAILURE);
         }
-        close(fileDescriptor[1]);
+        close(fileDescriptor1[1]);
         exit(EXIT_SUCCESS);
     } else {
+        close(fileDescriptor1[1]);
+        close(fileDescriptor[0]);
         printf("Inserisci due numeri interi:\n");
         int a, b;
         for (int i = 0; i < 2; i++) {
@@ -91,24 +100,24 @@ int main(void) {
                 if (write(fileDescriptor[1], &a, sizeof(int)) != sizeof(int)) {
                     perror("write to child");
                     i--;
-                    return 1;
+                    exit(EXIT_FAILURE);
                 }
             } else {
                 if (write(fileDescriptor[1], &b, sizeof(int)) != sizeof(int)) {
                     perror("write to child");
                     i--;
-                    return 1;
+                    exit(EXIT_FAILURE);
                 }
             }
         }
         close(fileDescriptor[1]);
         wait(NULL);
         int result;
-        if (read(fileDescriptor[0], &result, sizeof(int)) != sizeof(int)) {
+        if (read(fileDescriptor1[0], &result, sizeof(int)) != sizeof(int)) {
             perror("read from child");
-            return 1;
+            exit(EXIT_FAILURE);
         }
-        close(fileDescriptor[0]);
+        close(fileDescriptor1[0]);
         printf("La somma è: %d\n", result);
     }
     return 0;

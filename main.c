@@ -42,6 +42,7 @@ int main(void) {
             exit(EXIT_FAILURE);
         }
         close(fileDescriptor[0]);
+        sum = num1 + num2;
     } else {
         printf("Inserisci due numeri interi:\n");
         int a, b;

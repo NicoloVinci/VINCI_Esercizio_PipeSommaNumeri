@@ -44,7 +44,7 @@ int main(void) {
             exit(EXIT_FAILURE);
         }
         if (i != 2) {
-            printf("Nessun numero ricevuto.\n");
+            printf("Ricevuti numeri non validi.\n");
             close(fileDescriptor[0]);
             exit(EXIT_FAILURE);
         }
@@ -95,21 +95,8 @@ int main(void) {
                 b = (int)val;
             }
         }
-        for (int i = 0; i < 2; i++) {
-            if (i == 0) {
-                if (write(fileDescriptor[1], &a, sizeof(int)) != sizeof(int)) {
-                    perror("write to child");
-                    i--;
-                    exit(EXIT_FAILURE);
-                }
-            } else {
-                if (write(fileDescriptor[1], &b, sizeof(int)) != sizeof(int)) {
-                    perror("write to child");
-                    i--;
-                    exit(EXIT_FAILURE);
-                }
-            }
-        }
+        write(fileDescriptor[1], &a, sizeof(int));
+        write(fileDescriptor[1], &b, sizeof(int));
         close(fileDescriptor[1]);
         wait(NULL);
         int result;

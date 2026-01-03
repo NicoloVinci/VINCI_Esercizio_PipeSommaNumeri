@@ -10,15 +10,38 @@ int main(void) {
     int fileDescriptor[2];
     if (pipe(fileDescriptor) == -1) {
         perror("pipe");
-        return 1;
+        exit(EXIT_FAILURE);
     }
     pid_t child;
     if ((child = fork()) == -1) {
         perror("fork");
-        return 1;
+        exit(EXIT_FAILURE);
     }
     if (child == 0) {
-
+        ssize_t n;
+        int num1, num2, num, i = 0, sum = 0;
+        while ((n = read(fileDescriptor[0], &num, sizeof(int))) > 0) {
+            if (n != sizeof(int)) {
+                perror("read from father");
+                exit(EXIT_FAILURE);
+            }
+            if (i == 0) {
+                num1 = num;
+            } else {
+                num2 = num;
+            }
+            i++;
+        }
+        if (n == -1) {
+            perror("read from father");
+            exit(EXIT_FAILURE);
+        }
+        if (i != 2) {
+            printf("Nessun numero ricevuto.\n");
+            close(fileDescriptor[0]);
+            exit(EXIT_FAILURE);
+        }
+        close(fileDescriptor[0]);
     } else {
         printf("Inserisci due numeri interi:\n");
         int a, b;

@@ -43,6 +43,12 @@ int main(void) {
         }
         close(fileDescriptor[0]);
         sum = num1 + num2;
+        if (write(fileDescriptor[1], &sum, sizeof(int)) != sizeof(int)) {
+            perror("write to father");
+            exit(EXIT_FAILURE);
+        }
+        close(fileDescriptor[1]);
+        exit(EXIT_SUCCESS);
     } else {
         printf("Inserisci due numeri interi:\n");
         int a, b;

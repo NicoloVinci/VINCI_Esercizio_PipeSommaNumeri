@@ -96,8 +96,14 @@ int main(void) {
                 b = (int)val;
             }
         }
-        write(fileDescriptor[1], &a, sizeof(int));
-        write(fileDescriptor[1], &b, sizeof(int));
+        if(write(fileDescriptor[1], &a, sizeof(int) != sizeof(int)) {;
+            perror("write to child");
+            exit(EXIT_FAILURE);
+        }
+        if (write(fileDescriptor[1], &b, sizeof(int)) != sizeof(int)) {
+            perror("write to child");
+            exit(EXIT_FAILURE);
+        }
         close(fileDescriptor[1]);
         wait(NULL);
         int result;

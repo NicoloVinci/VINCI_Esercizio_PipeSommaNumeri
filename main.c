@@ -41,6 +41,7 @@ int main(void) {
         if (i != 2) {
             printf("Ricevuti numeri non validi.\n");
             close(fileDescriptor[0]);
+			close(fileDescriptor1[1]);
             exit(EXIT_FAILURE);
         }
         close(fileDescriptor[0]);
